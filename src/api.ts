@@ -1,7 +1,7 @@
 const API_KEY = "ed601d29b2ac1c3c2aab6136bdbbd60f";
 const BASE_PATH = "https://api.themoviedb.org/3";
 
-interface IMovie{
+export interface IMovie{
   id: number;
   backdrop_path: string;
   poster_path: string;
@@ -56,4 +56,11 @@ export async function getMovieDetail(movieId:number) {
       return data;
     })
   return data
+}
+
+
+export function searchMovie(keyWord:string) {
+  return fetch(`${BASE_PATH}/search/movie?api_key=${API_KEY}&language=ko&query=${keyWord}&page=1`).then(
+    (response) => response.json()
+  );
 }
