@@ -12,16 +12,25 @@
 
 ### Stack
 
-`Javascript` `React` `Redux` `Styled-Components`
+`TypeScript` `React` `framer-motion` `Styled-Components`
 
 ### Features
 
 ###
 
 ## 🧥 Directory
-
 ```
-
+├── public/
+├── src/
+│   ├── Routes /                      - routed pages
+│   │   └── Components                - page components
+│   ├── api.ts                        - get api data
+│   ├── utils.ts                      - util functions                    
+│   ├── App.tsx                       - page routing
+│   └── index.tsx                     - entry point
+│
+├── README.md                         - 리드미(프리뷰, 배포링크, 코드컨벤션)
+└── package.json                      - 사용 package 목록
 ```
 
 ### <br/>
@@ -35,7 +44,7 @@
 1. `clone` the repository,
 
 ```
-$ git clone "https://github.com/hasunghwa/hetflex.git"
+$ git clone "https://github.com/hasunghwa/hetflix.git"
 ```
 
 2. `Install` dependencies,
