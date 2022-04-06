@@ -6,14 +6,14 @@ import { useEffect, useRef } from "react";
 
 interface IBigMovie {
   detail: IGetMoviesDetail;
-  layoutId: string;
+  layoutId?: string;
   top: number;
 };
 
 function BigMovie({detail, layoutId, top}:IBigMovie){
   const {scrollY} = useViewportScroll();
   const bigMovie = useRef<HTMLDivElement>(null);
-  console.log(detail);
+  
   useEffect(() => {
     scrollY.onChange(()=> {
       if(bigMovie.current) {
@@ -42,7 +42,7 @@ function BigMovie({detail, layoutId, top}:IBigMovie){
               
               <DetailBox>
                 <Category>줄거리 </Category>
-                <Overview>{detail.overview}</Overview>
+                <Overview style={{ height: "200px"}}>{detail.overview}</Overview>
               </DetailBox>
             </BigOverview>                   
           </>
@@ -106,6 +106,7 @@ const Overview = styled.div`
 const DetailBox = styled.div`
   padding: 10px;
   margin: 10px;
+  overflow-y: auto; 
 `
 
 const Category = styled.span`
