@@ -9,6 +9,122 @@ import { faChevronRight, faChevronLeft } from "@fortawesome/free-solid-svg-icons
 import { useHistory, useRouteMatch } from "react-router-dom";
 import BigMovie from "./Components/BigMovie";
 
+const offset = 6;
+
+function Home(){
+  const history = useHistory();
+  const bigMovieMatch = useRouteMatch<{movieId:string}>("/movies/:movieId");
+  const {data, isLoading} = useQuery<IGetMoviesResult>(["movies", "nowPlaying"], getMovies);
+  const [index, setIndex] = useState(0);
+  const [leaving, setLeaving] = useState(false);
+  const [over, setOver] = useState(false);
+  const [rightCheck, setrCheck] = useState(true);
+  const {scrollY} = useViewportScroll();
+  
+  const clickedMovie = bigMovieMatch?.params.movieId && data?.results.find(movie => movie.id === +bigMovieMatch.params.movieId)
+  const [detail, setDetail] = useState<IGetMoviesDetail>();
+  
+  const increaseIndex = () => {
+    if (data) {
+      if (leaving) return;
+      toggleLeaving();
+      setrCheck(true);
+      const totalMovies = data.results.length - 1;
+      const maxIndex = Math.floor(totalMovies / offset) - 1;
+      setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));      
+    }
+  };
+
+  const decraseIndex = () => {
+    if (data) {
+      if (leaving) return;
+      toggleLeaving();
+      setrCheck(false);
+      const totalMovies = data.results.length - 1;
+      const maxIndex = Math.floor(totalMovies / offset) - 1;
+      setIndex((prev) => (prev === 0 ? maxIndex : prev - 1));
+    }
+  };
+
+  const toggleLeaving = () => setLeaving((prev) => !prev);
+  const onOver = () => setOver(true);
+  const leaveOver = () => setOver(false);
+  const onBoxClicked = (movieId:number) => {
+    history.push(`/movies/${movieId}`);
+    getMovieDetail(movieId).then(data => setDetail(data));
+  }
+
+  useEffect(() => {
+    if(bigMovieMatch?.params.movieId)
+      getMovieDetail(Number(bigMovieMatch?.params.movieId)).then(data => setDetail(data));
+  } ,[])
+
+  const onOverlayClick = () => {
+    history.push('/');
+  };
+  
+  return(
+    <Wrapper>
+      {isLoading ? ( 
+        <Loader>Loding...</Loader> 
+      ) : (
+        <>
+          <Banner bgPhoto={makeImagePath(data?.results[0].backdrop_path || "")}>
+            <Title>{data?.results[0].title}</Title>
+            <Overview>{data?.results[0].overview}</Overview>
+          </Banner>
+          <Slider onMouseOver={onOver} onMouseLeave={leaveOver}>
+            <div style={{margin:"0 30px 20px", fontSize: "1.3rem"}}>신규 컨텐츠</div>
+            {over ? (
+              <>
+                <Prev onClick={decraseIndex}><FontAwesomeIcon icon={faChevronLeft} /></Prev>
+                <Next onClick={increaseIndex}><FontAwesomeIcon icon={faChevronRight} /></Next>
+              </>) : null
+            }
+            <AnimatePresence custom={rightCheck} initial={false} onExitComplete={toggleLeaving}>
+              <Row
+                custom={rightCheck}
+                variants={rowVariants}
+                initial= "hidden"
+                animate= "visible"
+                exit= "exit"
+                transition={{ type: "tween", duration: 1 }}
+                key={index}
+              >
+                {data?.results
+                  .slice(1)
+                  .slice(offset * index, offset * index + offset)
+                  .map((movie) => (
+                    <Box
+                      onClick={() => onBoxClicked(movie.id)}
+                      key={movie.id}
+                      variants={boxVariants}
+                      whileHover="hover"
+                      initial="normal"
+                      transition={{ type: "tween" }}
+                      bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
+                    >
+                      <Info
+                        variants={infoVariants}
+                      >
+                        <h4>{movie.title}</h4>
+                      </Info>
+                    </Box>
+                  ))}
+              </Row>
+            </AnimatePresence>
+          </Slider>
+          {detail && bigMovieMatch ? (
+            <>
+              <Overlay onClick={onOverlayClick} exit={{opacity: 0}} animate={{opacity: 1}}/>
+              <BigMovie detail={detail} top={scrollY.get() + 100} layoutId={bigMovieMatch.params.movieId} />
+            </> 
+          ) :null}
+        </>
+      )}
+    </Wrapper>
+  );
+}
 
 const Wrapper = styled.div`
   background-color: black;
@@ -38,8 +154,9 @@ const Title = styled.h2`
 `;
 
 const Overview = styled.p`
-  font-size: 1.5rem;
-  width: 35%;
+  font-size: 1.3rem;
+  width: 40%;
+  line-height: 35px;
 `;
 
 const Slider = styled.div`
@@ -161,120 +278,4 @@ const infoVariants = {
   }
 }
 
-const offset = 6;
-
-function Home(){
-  const history = useHistory();
-  const bigMovieMatch = useRouteMatch<{movieId:string}>("/movies/:movieId");
-  const {data, isLoading} = useQuery<IGetMoviesResult>(["movies", "nowPlaying"], getMovies);
-  const [index, setIndex] = useState(0);
-  const [leaving, setLeaving] = useState(false);
-  const [over, setOver] = useState(false);
-  const [rightCheck, setrCheck] = useState(true);
-  const {scrollY} = useViewportScroll();
-  
-  const clickedMovie = bigMovieMatch?.params.movieId && data?.results.find(movie => movie.id === +bigMovieMatch.params.movieId)
-  const [detail, setDetail] = useState<IGetMoviesDetail>();
-  
-  const increaseIndex = () => {
-    if (data) {
-      if (leaving) return;
-      toggleLeaving();
-      setrCheck(true);
-      const totalMovies = data.results.length - 1;
-      const maxIndex = Math.floor(totalMovies / offset) - 1;
-      setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));      
-    }
-  };
-
-  const decraseIndex = () => {
-    if (data) {
-      if (leaving) return;
-      toggleLeaving();
-      setrCheck(false);
-      const totalMovies = data.results.length - 1;
-      const maxIndex = Math.floor(totalMovies / offset) - 1;
-      setIndex((prev) => (prev === 0 ? maxIndex : prev - 1));
-    }
-  };
-
-  const toggleLeaving = () => setLeaving((prev) => !prev);
-  const onOver = () => setOver(true);
-  const leaveOver = () => setOver(false);
-  const onBoxClicked = (movieId:number) => {
-    history.push(`/movies/${movieId}`);
-    getMovieDetail(movieId).then(data => setDetail(data));
-  }
-
-  useEffect(() => {
-    if(bigMovieMatch?.params.movieId)
-      getMovieDetail(Number(bigMovieMatch?.params.movieId)).then(data => setDetail(data));
-  } ,[])
-
-  const onOverlayClick = () => {
-    history.push('/');
-  };
-  
-  return(
-    <Wrapper>
-      {isLoading ? ( 
-        <Loader>Loding...</Loader> 
-      ) : (
-        <>
-          <Banner bgPhoto={makeImagePath(data?.results[0].backdrop_path || "")}>
-            <Title>{data?.results[0].title}</Title>
-            <Overview>{data?.results[0].overview}</Overview>
-          </Banner>
-          <Slider onMouseOver={onOver} onMouseLeave={leaveOver}>
-            <div style={{margin:"0 30px 20px"}}>신규 컨텐츠</div>
-            {over ? (
-              <>
-                <Prev onClick={decraseIndex}><FontAwesomeIcon icon={faChevronLeft} /></Prev>
-                <Next onClick={increaseIndex}><FontAwesomeIcon icon={faChevronRight} /></Next>
-              </>) : null
-            }
-            <AnimatePresence custom={rightCheck} initial={false} onExitComplete={toggleLeaving}>
-              <Row
-                custom={rightCheck}
-                variants={rowVariants}
-                initial= "hidden"
-                animate= "visible"
-                exit= "exit"
-                transition={{ type: "tween", duration: 1 }}
-                key={index}
-              >
-                {data?.results
-                  .slice(1)
-                  .slice(offset * index, offset * index + offset)
-                  .map((movie) => (
-                    <Box
-                      onClick={() => onBoxClicked(movie.id)}
-                      key={movie.id}
-                      variants={boxVariants}
-                      whileHover="hover"
-                      initial="normal"
-                      transition={{ type: "tween" }}
-                      bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
-                    >
-                      <Info
-                        variants={infoVariants}
-                      >
-                        <h4>{movie.title}</h4>
-                      </Info>
-                    </Box>
-                  ))}
-              </Row>
-            </AnimatePresence>
-          </Slider>
-          {detail && bigMovieMatch ? (
-            <>
-              <Overlay onClick={onOverlayClick} exit={{opacity: 0}} animate={{opacity: 1}}/>
-              <BigMovie detail={detail} top={scrollY.get() + 100} layoutId={bigMovieMatch.params.movieId} />
-            </> 
-          ) :null}
-        </>
-      )}
-    </Wrapper>
-  );
-}
 export default Home;
