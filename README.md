@@ -2,7 +2,7 @@
 
 클론코딩
 
-### 📌 &nbsp;[Hetflix 확인하러 가기](https://hetflex.netlify.app/)
+### 📌 &nbsp;[Hetflix 확인하러 가기](https://hetflx.netlify.app/)
 
 ### <br/>
 
