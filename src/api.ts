@@ -47,8 +47,14 @@ export function getMovies() {
   );
 }
 
+export function getTvs() {
+  return fetch(`${BASE_PATH}/tv/top_rated?api_key=${API_KEY}&language=ko`).then(
+    (response) => response.json()
+  );
+}
+
 export async function getMovieDetail(movieId:number) {
-  const data = await fetch(`${BASE_PATH}/movie/${movieId}?api_key=${API_KEY}&language=ko`)
+  const data = await fetch(`${BASE_PATH}/movie/${movieId}?api_key=${API_KEY}&language=ko&page=1`)
     .then(function(response) {
       return response.json();
     })
