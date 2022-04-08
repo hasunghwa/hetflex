@@ -10,6 +10,7 @@ function Tv(){
   const [TvList, setTvList] = useState<IMovie[]>();
   const offset = 5;
 
+  console.log(TvList);
   useEffect(() => {
     getTvs().then(data => setTvList(data.results));
   }, [])
@@ -22,13 +23,13 @@ function Tv(){
             {TvList 
               .slice(offset * 0, offset * 0 + offset)
               .map((movie) => 
-                <MovieBox key={movie.id} movieInfo={movie}/>)} 
+                <MovieBox key={movie.id} movieInfo={movie} isTv={true} />)} 
           </Row>
           <Row>
           {TvList 
             .slice(offset * 1, offset * 1 + offset)
             .map((movie) => 
-              <MovieBox key={movie.id} movieInfo={movie}/>)} 
+              <MovieBox key={movie.id} movieInfo={movie} isTv={true}/>)} 
           </Row>
         </>
         ): null

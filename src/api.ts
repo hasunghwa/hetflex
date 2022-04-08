@@ -29,7 +29,10 @@ export interface IGetMoviesDetail {
   id: number,
   imdb_id: string,
   original_title: string;
+  name: string;
+  original_name: string;
   title: string;
+  first_air_date: string;
   backdrop_path: string;
   overview: string;
   homepage: string;
@@ -37,6 +40,7 @@ export interface IGetMoviesDetail {
   genres: IGgenre[];
   release_date: string;
   runtime: number,
+  episode_run_time: number;
   status: string,
   vote_average: number,
 }
@@ -64,6 +68,16 @@ export async function getMovieDetail(movieId:number) {
   return data
 }
 
+export async function getTvDetail(tvId:number) {
+  const data = await fetch(`${BASE_PATH}/tv/${tvId}?api_key=${API_KEY}&language=ko&page=1`)
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      return data;
+    })
+  return data
+}
 
 export function searchMovie(keyWord:string) {
   return fetch(`${BASE_PATH}/search/movie?api_key=${API_KEY}&language=ko&query=${keyWord}&page=1`).then(
