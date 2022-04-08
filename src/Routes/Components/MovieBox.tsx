@@ -1,31 +1,39 @@
 import styled from "styled-components";
-import { IMovie, IGetMoviesDetail, getMovieDetail } from "../../api";
+import { IMovie, IGetMoviesDetail, getMovieDetail, getTvDetail } from "../../api";
 import { makeImagePath } from "../../utils";
 import { motion } from "framer-motion";
 import BigMovie from "../Components/BigMovie";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { useState } from "react";
 import { useViewportScroll } from "framer-motion";
+import { rawListeners } from "process";
 
 interface IMovieList {
   movieInfo: IMovie;
   key: number;
   keyword?: string;
+  isTv? : boolean;
 };
 
-function MovieBox({movieInfo, keyword}: IMovieList){
+function MovieBox({movieInfo, keyword, isTv}: IMovieList){
   const history = useHistory();
   const [openModal, setOpenModal] = useState(false);
   const [detail, setDetail] = useState<IGetMoviesDetail>();
   const {scrollY} = useViewportScroll();
   const onBoxClicked = (movieId:number) => {
-    getMovieDetail(movieId).then(data => setDetail(data));
+    if(isTv)
+      getTvDetail(movieId).then(data => setDetail(data));
+    else 
+      getMovieDetail(movieId).then(data => setDetail(data));
     setOpenModal(true);
   }
 
   const onOverlayClick = () => {
     setOpenModal(false);
-    history.push(`/search?keyword=${keyword}`);
+    if(isTv)
+      history.push(`/tv`);
+    else
+      history.push(`/search?keyword=${keyword}`);
   };
 
   return (
@@ -43,7 +51,7 @@ function MovieBox({movieInfo, keyword}: IMovieList){
       {detail && openModal? (
         <>
           <Overlay onClick={onOverlayClick} exit={{opacity: 0}} animate={{opacity: 1}}/>
-          <BigMovie detail={detail} top={scrollY.get() + 100} />
+          <BigMovie detail={detail} top={scrollY.get() + 100} isTv={isTv}/>
         </> 
       ) :null}
     </>
