@@ -1,20 +1,28 @@
 import { AnimatePresence, motion, useViewportScroll} from "framer-motion";
 import styled from "styled-components";
 import { makeImagePath } from "../../utils";
-import { getMovieDetail, IGetMoviesDetail } from "../../api";
+import { IGetMoviesDetail, getMovievedio } from "../../api";
 import { useEffect, useRef } from "react";
+import  ReactPlayer  from  'react-player/youtube'
 
 interface IBigMovie {
   detail: IGetMoviesDetail;
   layoutId?: string;
   top: number;
   isTv? : boolean;
+  movieKey? : string;
+  setKey? : Function;
 };
 
-function BigMovie({detail, layoutId, top, isTv}:IBigMovie){
+function BigMovie({detail, layoutId, top, isTv, movieKey, setKey}:IBigMovie){
   const {scrollY} = useViewportScroll();
-  const bigMovie = useRef<HTMLDivElement>(null);
-  console.log(detail);
+  const bigMovie = useRef<HTMLDivElement>(null);  
+  useEffect(() => {
+    if(setKey){
+      getMovievedio(detail.id).then(data => setKey(data.results[0].key));
+    }
+  } ,[])
+
   useEffect(() => {
     scrollY.onChange(()=> {
       if(bigMovie.current) {
@@ -22,6 +30,20 @@ function BigMovie({detail, layoutId, top, isTv}:IBigMovie){
       }
     });
   } ,[scrollY])
+
+  const cover = () => {
+    if(movieKey)
+      return <ReactPlayer 
+      className="react-player" 
+      url={`https://www.youtube.com/watch?v=${movieKey}`} 
+      width="100%" 
+      height="100%" 
+      muted={true} //chrome정책으로 인해 자동 재생을 위해 mute 옵션을 true로 해주었다.
+      playing={true} 
+      loop={true} />
+    else
+      return <BigCover style={{backgroundImage: `linear-gradient(to top, black, transparent), url(${makeImagePath(detail.backdrop_path, "w500")})` }}></BigCover>
+  }
 
   const date = () => {
     if(isTv)
@@ -43,13 +65,15 @@ function BigMovie({detail, layoutId, top, isTv}:IBigMovie){
     else
       return <Empty>|<Category> 러닝타임</Category> {detail.runtime}분</Empty>                
   }
-  
+
   return(
     <AnimatePresence>
       <Warraper layoutId={layoutId} style={{top: top}} ref={bigMovie}> 
         {detail && 
           <>
-            <BigCover style={{backgroundImage: `linear-gradient(to top, black, transparent), url(${makeImagePath(detail.backdrop_path, "w500")})` }}></BigCover>
+            <BigCover> 
+            {cover()}
+            </BigCover>
             {title()}
             <BigOverview>
               <DetailBox>

@@ -4,9 +4,8 @@ import { makeImagePath } from "../../utils";
 import { motion } from "framer-motion";
 import BigMovie from "../Components/BigMovie";
 import { useHistory, useRouteMatch } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useViewportScroll } from "framer-motion";
-import { rawListeners } from "process";
 
 interface IMovieList {
   movieInfo: IMovie;
@@ -20,16 +19,20 @@ function MovieBox({movieInfo, keyword, isTv}: IMovieList){
   const [openModal, setOpenModal] = useState(false);
   const [detail, setDetail] = useState<IGetMoviesDetail>();
   const {scrollY} = useViewportScroll();
+  const [key, setKey] = useState("");
+
   const onBoxClicked = (movieId:number) => {
     if(isTv)
       getTvDetail(movieId).then(data => setDetail(data));
-    else 
+    else {            
       getMovieDetail(movieId).then(data => setDetail(data));
+    }
     setOpenModal(true);
   }
 
   const onOverlayClick = () => {
     setOpenModal(false);
+    setKey("");
     if(isTv)
       history.push(`/tv`);
     else
@@ -51,7 +54,7 @@ function MovieBox({movieInfo, keyword, isTv}: IMovieList){
       {detail && openModal? (
         <>
           <Overlay onClick={onOverlayClick} exit={{opacity: 0}} animate={{opacity: 1}}/>
-          <BigMovie detail={detail} top={scrollY.get() + 100} isTv={isTv}/>
+          <BigMovie detail={detail} top={scrollY.get() + 100} isTv={isTv} movieKey={key} setKey={setKey}/>
         </> 
       ) :null}
     </>

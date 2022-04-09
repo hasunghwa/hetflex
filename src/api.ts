@@ -84,3 +84,9 @@ export function searchMovie(keyWord:string) {
     (response) => response.json()
   );
 }
+
+export function getMovievedio(movieId:number) {
+  return fetch(`${BASE_PATH}/movie/${movieId}/videos?api_key=${API_KEY}`).then(
+    (response) => response.json()
+  );
+}
