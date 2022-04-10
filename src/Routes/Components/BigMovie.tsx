@@ -19,7 +19,10 @@ function BigMovie({detail, layoutId, top, isTv, movieKey, setKey}:IBigMovie){
   const bigMovie = useRef<HTMLDivElement>(null);  
   useEffect(() => {
     if(setKey){
-      getMovievedio(detail.id).then(data => setKey(data.results[0].key));
+      if(layoutId)
+        getMovievedio(+layoutId).then(data => setKey(data.results[0].key));
+      else 
+        getMovievedio(detail.id).then(data => setKey(data.results[0].key));
     }
   } ,[])
 

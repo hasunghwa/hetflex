@@ -20,7 +20,8 @@ function Home(){
   const [over, setOver] = useState(false);
   const [rightCheck, setrCheck] = useState(true);
   const {scrollY} = useViewportScroll();
-  
+  const [key, setKey] = useState("");
+
   const clickedMovie = bigMovieMatch?.params.movieId && data?.results.find(movie => movie.id === +bigMovieMatch.params.movieId)
   const [detail, setDetail] = useState<IGetMoviesDetail>();
   
@@ -61,6 +62,7 @@ function Home(){
 
   const onOverlayClick = () => {
     history.push('/');
+    setKey("");
   };
   
   return(
@@ -117,7 +119,7 @@ function Home(){
           {detail && bigMovieMatch ? (
             <>
               <Overlay onClick={onOverlayClick} exit={{opacity: 0}} animate={{opacity: 1}}/>
-              <BigMovie detail={detail} top={scrollY.get() + 100} layoutId={bigMovieMatch.params.movieId} />
+              <BigMovie detail={detail} top={scrollY.get() + 100} layoutId={bigMovieMatch.params.movieId} movieKey={key} setKey={setKey}/>
             </> 
           ) :null}
         </>
