@@ -1,7 +1,8 @@
-import { AnimatePresence, motion, useAnimation, useViewportScroll } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
-import { useQuery } from "react-query";
+
 import styled from "styled-components";
+import { AnimatePresence, motion, useViewportScroll } from "framer-motion";
+import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { getMovies, IGetMoviesResult, getMovieDetail, IGetMoviesDetail } from "../api";
 import { makeImagePath } from "../utils";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -9,12 +10,12 @@ import { faChevronRight, faChevronLeft } from "@fortawesome/free-solid-svg-icons
 import { useHistory, useRouteMatch } from "react-router-dom";
 import BigMovie from "./Components/BigMovie";
 
-const offset = 6;
 
 function Home(){
   const history = useHistory();
   const bigMovieMatch = useRouteMatch<{movieId:string}>("/movies/:movieId");
   const {data, isLoading} = useQuery<IGetMoviesResult>(["movies", "nowPlaying"], getMovies);
+  const [detail, setDetail] = useState<IGetMoviesDetail>();
   const [index, setIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
   const [over, setOver] = useState(false);
@@ -22,9 +23,8 @@ function Home(){
   const {scrollY} = useViewportScroll();
   const [key, setKey] = useState("");
 
-  const clickedMovie = bigMovieMatch?.params.movieId && data?.results.find(movie => movie.id === +bigMovieMatch.params.movieId)
-  const [detail, setDetail] = useState<IGetMoviesDetail>();
-  
+  const offset = 6;
+
   const increaseIndex = () => {
     if (data) {
       if (leaving) return;
@@ -50,6 +50,7 @@ function Home(){
   const toggleLeaving = () => setLeaving((prev) => !prev);
   const onOver = () => setOver(true);
   const leaveOver = () => setOver(false);
+  
   const onBoxClicked = (movieId:number) => {
     history.push(`/movies/${movieId}`);
     getMovieDetail(movieId).then(data => setDetail(data));

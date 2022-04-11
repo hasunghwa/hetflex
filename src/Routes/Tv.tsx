@@ -6,11 +6,9 @@ import { getTvs, IMovie } from "../api";
 import styled from "styled-components";
 
 function Tv(){
-  const location = useLocation();
   const [TvList, setTvList] = useState<IMovie[]>();
   const offset = 5;
 
-  console.log(TvList);
   useEffect(() => {
     getTvs().then(data => setTvList(data.results));
   }, [])

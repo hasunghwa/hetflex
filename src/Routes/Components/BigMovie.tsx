@@ -1,5 +1,5 @@
-import { AnimatePresence, motion, useViewportScroll} from "framer-motion";
 import styled from "styled-components";
+import { AnimatePresence, motion, useViewportScroll} from "framer-motion";
 import { makeImagePath } from "../../utils";
 import { IGetMoviesDetail, getMovievedio } from "../../api";
 import { useEffect, useRef } from "react";
@@ -17,6 +17,7 @@ interface IBigMovie {
 function BigMovie({detail, layoutId, top, isTv, movieKey, setKey}:IBigMovie){
   const {scrollY} = useViewportScroll();
   const bigMovie = useRef<HTMLDivElement>(null);  
+
   useEffect(() => {
     if(setKey){
       if(layoutId)
@@ -41,7 +42,7 @@ function BigMovie({detail, layoutId, top, isTv, movieKey, setKey}:IBigMovie){
       url={`https://www.youtube.com/watch?v=${movieKey}`} 
       width="100%" 
       height="100%" 
-      muted={true} //chrome정책으로 인해 자동 재생을 위해 mute 옵션을 true로 해주었다.
+      muted={true} 
       playing={true} 
       loop={true} />
     else

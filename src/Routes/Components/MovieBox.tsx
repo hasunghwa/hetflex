@@ -24,7 +24,7 @@ function MovieBox({movieInfo, keyword, isTv}: IMovieList){
   const onBoxClicked = (movieId:number) => {
     if(isTv)
       getTvDetail(movieId).then(data => setDetail(data));
-    else {            
+    else {        
       getMovieDetail(movieId).then(data => setDetail(data));
     }
     setOpenModal(true);
